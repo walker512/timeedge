@@ -72,3 +72,7 @@ The run emitted GitHub Actions Node 20 deprecation warnings for checkout v4
 and setup-python v5; the platform executed them using Node 24. These warnings
 were not test failures. Runner-image/capacity notices are not application defects.
 No public package registry upload, real-device testing or adoption claim is made.
+
+## Separate 0.2.0 execution-comparison increment
+
+The new `timeedge.compare` mode has **55 local tests passed, zero skips** (28 original unchanged + 27 new), Linux/Python 3.12.14 with actual Node v24.22.1/ICU78.3/tz2026e reports. The new tests execute trusted original adapters; they do not establish language superiority or a shared timezone dataset. An offline-built wheel was installed into a new virtual environment and invoked from outside the checkout: the seven-case comparison, source-hash offline verification and original policy CLI all ran. [Detailed scope and execution warnings](docs/LANGUAGE_BOUNDARIES.md) distinguish runner probes, adapter self-report and recorded-but-not-reexecuted policy references. No new browser/animation/Windows/macOS/hosted-CI result is claimed for this mode.

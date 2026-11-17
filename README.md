@@ -92,3 +92,11 @@ python benchmarks/compare_dateutil.py
 
 See [VALIDATION.md](VALIDATION.md) for actually completed checks and gaps.
 MIT licensed. Maintainer: **walker512**.
+
+## Optional real Python / JavaScript experiments (0.2.0)
+
+[Language boundary comparisons](docs/LANGUAGE_BOUNDARIES.md) execute explicitly trusted local Python and Node adapters on seven original date/DST cases, record UTC/wall/offset/fold differences and compare each side with its own declared expectation. The original TimeEdge policy appears as a separate recorded reference, not a universal answer for unlike arithmetic methods. Native “24 hours” is deliberately labeled non-equivalent across the demonstrated operations.
+
+Use `python -m timeedge.compare run examples/compare/suite.json --python-adapter examples/compare/python_adapter.py --node-adapter examples/compare/node_adapter.js --out boundary-run --allow-execute --require-expected`, then `python -m timeedge.compare verify boundary-run --require-expected`. **Trusted code only, not a sandbox.** The installed command is `timeedge-compare`. Offline verification does not execute scripts or recompute reference timezone behavior. There is no animation/new GUI acceptance, language ranking, shared-tzdb assumption or external API call. The original core/CLI/tests and core version 0.1.0 remain unchanged; the distribution/new mode are 0.2.0.
+
+Comparison increment validation: **55 local tests passed, zero skips** (28 original unchanged + 27 new), plus an offline wheel install and actual seven-case run/verify outside the source checkout. These are original local Python/Node examples only; original UI/hosted evidence does not cover this new CLI mode.
