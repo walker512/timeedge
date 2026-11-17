@@ -1,6 +1,6 @@
 # Validation status
 
-Candidate validation, 2026-11-17. No public release or hosted CI result claimed.
+Validation record, 2026-11-17. Hosted CI evidence is recorded below.
 
 ## Completed locally
 
@@ -23,13 +23,13 @@ Candidate validation, 2026-11-17. No public release or hosted CI result claimed.
 - Initial headless screenshot attempts were blocked by the executor socket restriction.
   Desktop and narrow-layout checks subsequently passed in the cloud browser (below).
   Real mobile-device and observed offline browser-network tests are not claimed.
-- Windows/macOS and Python 3.11/3.13 not run locally. CI matrix is configured but
-  has not run in a remote repository.
+- Windows/macOS and Python 3.11/3.13 were not run locally; the remote matrix
+  has now passed (see exact run below).
 - Not exhaustively tested against all historical or future timezone transitions.
 - No user adoption or star-growth validation. Independent code-review outcome is recorded below; visual and platform gates remain open.
 
-Release gate: run cross-platform CI on the exact candidate before claiming a
-finished public release. Independent code and responsive-layout reviews are below.
+Code, responsive-layout and cross-platform test gates passed for the narrow
+diagnostic scope. Real phone-device and exhaustive timezone testing are not claimed.
 
 ## Independent code review
 
@@ -45,8 +45,8 @@ fixed two report-contract issues:
 The resulting 28 tests pass on Linux, including new regressions for both issues.
 The wheel was rebuilt successfully. The bundled HTML was regenerated from the
 example JSON. No browser, Windows/macOS or hosted CI result is implied by these
-checks. The code-review stage passes for this narrow diagnostic scope; release
-remains on hold pending those independent execution/visual gates. The comparison
+checks. The code-review stage passes for this narrow diagnostic scope; subsequent
+execution and visual results are recorded below. The comparison
 supports a packaged review-workflow benefit only, not superior time arithmetic.
 
 ### Browser layout verification
@@ -58,3 +58,17 @@ keyboard-focusable horizontal scrolling region. Left and right columns were
 visually checked after scrolling. This is responsive-layout QA, not a real
 phone/device test. Headless browser launch remains restricted in this executor;
 these checks used the available cloud browser and a local static preview.
+
+## Hosted cross-platform verification
+
+[CI run 44008115591](https://github.com/walker512/timeedge/actions/runs/44008115591)
+passed on commit `930da6272068aef0e84b4167f22f37d239640fad`: Linux, Windows and
+macOS, each with Python 3.11, 3.12 and 3.13 (nine successful jobs). The Windows
+3.11 log was inspected and confirms 28 tests executed, not an empty discovery.
+The downloaded repository ZIP contained exactly the 17 reviewed source files,
+with every SHA-256 matching the local candidate.
+
+The run emitted GitHub Actions Node 20 deprecation warnings for checkout v4
+and setup-python v5; the platform executed them using Node 24. These warnings
+were not test failures. Runner-image/capacity notices are not application defects.
+No public package registry upload, real-device testing or adoption claim is made.
