@@ -4,7 +4,7 @@ Validation record, 2026-11-17. Hosted CI evidence is recorded below.
 
 ## Completed locally
 
-- Python 3.12.14 on Linux: `python -m unittest discover -s tests -v`, **26 tests passed**.
+- Python 3.12.14 on Linux: `python -m unittest discover -s tests -v`, **28 tests passed** in the current reviewed suite (initial baseline: 26).
 - Covers one-hour and half-hour gaps/folds, Apia skipped date, UTC false-fold
   avoidance, leap years, preserved month-end anchor, wall-day vs elapsed-day,
   invalid policies/input/ranges, summary semantics, output escaping and refusal
@@ -26,7 +26,7 @@ Validation record, 2026-11-17. Hosted CI evidence is recorded below.
 - Windows/macOS and Python 3.11/3.13 were not run locally; the remote matrix
   has now passed (see exact run below).
 - Not exhaustively tested against all historical or future timezone transitions.
-- No user adoption or star-growth validation. Independent code-review outcome is recorded below; visual and platform gates remain open.
+- No user adoption or star-growth validation. Completed independent code-review, visual and platform results are recorded below.
 
 Code, responsive-layout and cross-platform test gates passed for the narrow
 diagnostic scope. Real phone-device and exhaustive timezone testing are not claimed.
