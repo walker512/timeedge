@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>TimeEdge boundary lab</title><style>body{font:16px system-ui;background:#0b1524;color:#edf4ff;margin:4vw;line-height:1.6}h1{font-size:3rem;margin-bottom:0;color:#73e7ca}table{border-collapse:collapse;width:100%;min-width:1000px;font-size:.9rem}td,th{padding:12px;border-bottom:1px solid #34465b;text-align:left}td{white-space:nowrap}section{overflow:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#a8c8e9}.tag{color:#73e7ca}footer{margin-top:40px}</style><p class="tag">WALKER512 / TIMEEDGE 0.1</p><h1>Wall time is not an instant.</h1><p>Inspect calendar and timezone boundaries before they become production bugs. Every adjustment is explicit.</p><pre>{
+  &quot;tool_version&quot;: &quot;0.1.0&quot;,
+  &quot;python&quot;: &quot;3.12.14&quot;,
+  &quot;zone&quot;: &quot;America/New_York&quot;,
+  &quot;tzfile_sha256&quot;: &quot;e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95&quot;,
+  &quot;start&quot;: &quot;2026-03-07T02:30&quot;,
+  &quot;count&quot;: 3,
+  &quot;recurrence&quot;: &quot;daily&quot;,
+  &quot;month_end&quot;: &quot;reject&quot;,
+  &quot;ambiguous&quot;: &quot;reject&quot;,
+  &quot;nonexistent&quot;: &quot;reject&quot;
+}</pre><p>On narrow screens, scroll the table horizontally to inspect all columns.</p><section tabindex="0" aria-label="Schedule results, scroll horizontally"><table><thead><tr><th>Requested local time</th><th>Boundary</th><th>Outcome</th><th>Calendar clamped</th><th>DST shift</th><th>Resolved local time(s)</th><th>UTC instant(s)</th></tr></thead><tbody><tr><td>2026-03-07T02:30:00</td><td>normal</td><td>resolved</td><td>False</td><td>None</td><td>2026-03-07T02:30:00-05:00</td><td>2026-03-07T07:30:00+00:00</td></tr><tr><td>2026-03-08T02:30:00</td><td>nonexistent</td><td>rejected</td><td>False</td><td>None</td><td></td><td></td></tr><tr><td>2026-03-09T02:30:00</td><td>normal</td><td>resolved</td><td>False</td><td>None</td><td>2026-03-09T02:30:00-04:00</td><td>2026-03-09T06:30:00+00:00</td></tr></tbody></table></section><footer>Offline report. No uploads, telemetry, scripts or remote assets. Rejected rows are not scheduled. “Both” produces two instants. A gap shift preserves position within the gap, not the first valid minute.</footer></html>
