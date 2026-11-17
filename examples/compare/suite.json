@@ -1,0 +1,425 @@
+{
+  "schema": 1,
+  "cases": [
+    {
+      "id": "spring-gap",
+      "request": {
+        "local": "2026-03-08T02:30:00",
+        "zone": "America/New_York",
+        "operation": "construct",
+        "argument": null
+      },
+      "semantics": {
+        "python": "datetime.replace(tzinfo=ZoneInfo), default fold=0; imaginary wall retained",
+        "node": "new Date(local fields), gap normalized forward",
+        "equivalent_intent": false,
+        "note": "Same UTC is not same wall-time behavior; reference deliberately rejects the missing time."
+      },
+      "expected": {
+        "python": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T07:30:00Z",
+          "epoch_ms": 1772955000000,
+          "wall": "2026-03-08T02:30:00",
+          "roundtrip_wall": "2026-03-08T03:30:00",
+          "offset_seconds": -18000,
+          "roundtrip_offset_seconds": -14400,
+          "fold": 0,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            2,
+            30,
+            0
+          ]
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T07:30:00Z",
+          "epoch_ms": 1772955000000,
+          "wall": "2026-03-08T03:30:00",
+          "roundtrip_wall": "2026-03-08T03:30:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            3,
+            30,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "daily",
+        "count": 1,
+        "month_end": "reject",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "autumn-fold",
+      "request": {
+        "local": "2026-11-01T01:30:00",
+        "zone": "America/New_York",
+        "operation": "construct",
+        "argument": null
+      },
+      "semantics": {
+        "python": "Default fold=0 chooses the earlier occurrence",
+        "node": "Date local constructor chooses the earlier occurrence",
+        "equivalent_intent": true,
+        "note": "Both defaults choose earlier; explicit TimeEdge reference preserves both valid instants."
+      },
+      "expected": {
+        "python": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-11-01T05:30:00Z",
+          "epoch_ms": 1793511000000,
+          "wall": "2026-11-01T01:30:00",
+          "roundtrip_wall": "2026-11-01T01:30:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": 0,
+          "wall_fields": [
+            2026,
+            11,
+            1,
+            1,
+            30,
+            0
+          ]
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-11-01T05:30:00Z",
+          "epoch_ms": 1793511000000,
+          "wall": "2026-11-01T01:30:00",
+          "roundtrip_wall": "2026-11-01T01:30:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            11,
+            1,
+            1,
+            30,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "daily",
+        "count": 1,
+        "month_end": "reject",
+        "ambiguous": "both",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "month-overflow",
+      "request": {
+        "local": "2026-01-31T09:00:00",
+        "zone": "UTC",
+        "operation": "replace_month",
+        "argument": 2
+      },
+      "semantics": {
+        "python": "datetime.replace(month=2) rejects an impossible day",
+        "node": "Date.setMonth(1) preserves day and overflows into March",
+        "equivalent_intent": false,
+        "note": "Different invalid-date policy. TimeEdge monthly clamp is a third explicit policy, not a winner."
+      },
+      "expected": {
+        "python": {
+          "status": "domain_error",
+          "error": "invalid_calendar_date",
+          "utc": null,
+          "epoch_ms": null,
+          "wall": null,
+          "roundtrip_wall": null,
+          "offset_seconds": null,
+          "roundtrip_offset_seconds": null,
+          "fold": null,
+          "wall_fields": null
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-03T09:00:00Z",
+          "epoch_ms": 1772528400000,
+          "wall": "2026-03-03T09:00:00",
+          "roundtrip_wall": "2026-03-03T09:00:00",
+          "offset_seconds": 0,
+          "roundtrip_offset_seconds": 0,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            3,
+            3,
+            9,
+            0,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "monthly",
+        "count": 2,
+        "month_end": "clamp",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "leap-year-overflow",
+      "request": {
+        "local": "2024-02-29T09:00:00",
+        "zone": "UTC",
+        "operation": "replace_year",
+        "argument": 2025
+      },
+      "semantics": {
+        "python": "datetime.replace(year=2025) rejects February 29",
+        "node": "Date.setFullYear(2025) normalizes to March 1",
+        "equivalent_intent": false,
+        "note": "Reference yearly skip retains its declared anchor and records an invalid slot."
+      },
+      "expected": {
+        "python": {
+          "status": "domain_error",
+          "error": "invalid_calendar_date",
+          "utc": null,
+          "epoch_ms": null,
+          "wall": null,
+          "roundtrip_wall": null,
+          "offset_seconds": null,
+          "roundtrip_offset_seconds": null,
+          "fold": null,
+          "wall_fields": null
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2025-03-01T09:00:00Z",
+          "epoch_ms": 1740819600000,
+          "wall": "2025-03-01T09:00:00",
+          "roundtrip_wall": "2025-03-01T09:00:00",
+          "offset_seconds": 0,
+          "roundtrip_offset_seconds": 0,
+          "fold": null,
+          "wall_fields": [
+            2025,
+            3,
+            1,
+            9,
+            0,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "yearly",
+        "count": 2,
+        "month_end": "skip",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "calendar-day",
+      "request": {
+        "local": "2026-03-07T12:00:00",
+        "zone": "America/New_York",
+        "operation": "calendar_day",
+        "argument": 1
+      },
+      "semantics": {
+        "python": "datetime + timedelta(days=1) with same ZoneInfo uses wall arithmetic",
+        "node": "Date.setDate(getDate()+1) advances local calendar day",
+        "equivalent_intent": true,
+        "note": "One local day crosses only 23 elapsed hours at spring transition."
+      },
+      "expected": {
+        "python": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T16:00:00Z",
+          "epoch_ms": 1772985600000,
+          "wall": "2026-03-08T12:00:00",
+          "roundtrip_wall": "2026-03-08T12:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": 0,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            12,
+            0,
+            0
+          ]
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T16:00:00Z",
+          "epoch_ms": 1772985600000,
+          "wall": "2026-03-08T12:00:00",
+          "roundtrip_wall": "2026-03-08T12:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            12,
+            0,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "daily",
+        "count": 2,
+        "month_end": "reject",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "native-24-hours",
+      "request": {
+        "local": "2026-03-07T12:00:00",
+        "zone": "America/New_York",
+        "operation": "native_24h",
+        "argument": null
+      },
+      "semantics": {
+        "python": "datetime + timedelta(hours=24) with same ZoneInfo uses wall arithmetic",
+        "node": "new Date(getTime()+86400000) adds elapsed milliseconds",
+        "equivalent_intent": false,
+        "note": "The two native operations deliberately have unequal arithmetic semantics. No language correctness score."
+      },
+      "expected": {
+        "python": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T16:00:00Z",
+          "epoch_ms": 1772985600000,
+          "wall": "2026-03-08T12:00:00",
+          "roundtrip_wall": "2026-03-08T12:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": 0,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            12,
+            0,
+            0
+          ]
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T17:00:00Z",
+          "epoch_ms": 1772989200000,
+          "wall": "2026-03-08T13:00:00",
+          "roundtrip_wall": "2026-03-08T13:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            13,
+            0,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "daily",
+        "count": 2,
+        "month_end": "reject",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    },
+    {
+      "id": "explicit-elapsed-24-hours",
+      "request": {
+        "local": "2026-03-07T12:00:00",
+        "zone": "America/New_York",
+        "operation": "elapsed_24h",
+        "argument": null
+      },
+      "semantics": {
+        "python": "Convert to UTC, add timedelta(hours=24), then convert back",
+        "node": "Add 86400000 elapsed milliseconds",
+        "equivalent_intent": true,
+        "note": "Both explicitly elapsed operations land at 13:00; TimeEdge daily reference is calendar-based and remains distinct."
+      },
+      "expected": {
+        "python": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T17:00:00Z",
+          "epoch_ms": 1772989200000,
+          "wall": "2026-03-08T13:00:00",
+          "roundtrip_wall": "2026-03-08T13:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": 0,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            13,
+            0,
+            0
+          ]
+        },
+        "node": {
+          "status": "ok",
+          "error": null,
+          "utc": "2026-03-08T17:00:00Z",
+          "epoch_ms": 1772989200000,
+          "wall": "2026-03-08T13:00:00",
+          "roundtrip_wall": "2026-03-08T13:00:00",
+          "offset_seconds": -14400,
+          "roundtrip_offset_seconds": -14400,
+          "fold": null,
+          "wall_fields": [
+            2026,
+            3,
+            8,
+            13,
+            0,
+            0
+          ]
+        }
+      },
+      "reference": {
+        "recurrence": "daily",
+        "count": 2,
+        "month_end": "reject",
+        "ambiguous": "reject",
+        "nonexistent": "reject"
+      }
+    }
+  ]
+}
