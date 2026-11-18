@@ -157,3 +157,13 @@ restart cancellation and keyboard slider. Desktop rendering was inspected.
 Other browsers, mobile viewport, assistive technology and Windows/macOS runtime
 are not verified. This is an incremental teaching interface, not full original
 cross-language interactive IDE coverage or proof of production scheduling.
+
+## Inspect recorded comparisons case by case
+
+`python -m timeedge.lesson build comparison-bundle lesson.html` creates an
+exclusive, private-on-POSIX, script-free teaching view after existing comparison
+verification passes. `python -m timeedge.lesson verify comparison-bundle lesson.html`
+checks exact regenerated display bytes. It never executes an adapter, changes a
+policy, or authenticates recorded history. See [recorded lessons](docs/RECORDED_LESSONS.md)
+for limits, privacy and partial-write handling. Browser and Windows acceptance
+of this increment have not been performed.
