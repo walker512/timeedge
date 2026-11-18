@@ -97,7 +97,8 @@ elements.play.fire('click');[...intervals.values()][0]();assert.equal(elements.s
 elements.play.fire('click');assert.equal(elements.step.textContent,'Slot 1 / 3');document.hidden=true;document.events.visibilitychange();assert.equal(intervals.size,0);
 elements.play.fire('click');elements.fold.value='both';elements.fold.fire('change');assert.equal(intervals.size,0);assert.equal(elements.rows.children.length,3);
 '''
-        proc=subprocess.run(['node','-e','const FIXTURE='+json.dumps(fixture)+';'+harness+SCRIPT+checks],capture_output=True,text=True)
+        program='const FIXTURE='+json.dumps(fixture)+';'+harness+SCRIPT+checks
+        proc=subprocess.run(['node','--input-type=commonjs','-'],input=program,capture_output=True,text=True,encoding='utf-8')
         self.assertEqual(proc.returncode,0,proc.stderr)
     def test_symlink_destination_not_followed(self):
         with tempfile.TemporaryDirectory() as t:
