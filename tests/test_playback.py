@@ -51,6 +51,7 @@ class PlaybackTests(unittest.TestCase):
         self.assertIn("script-src 'sha256-"+base64.b64encode(hashlib.sha256(SCRIPT.encode()).digest()).decode()+"'",h)
         self.assertNotIn('innerHTML',SCRIPT);self.assertNotIn('fetch(',SCRIPT)
         self.assertIn('\\u003c/script\\u003e',h)
+    @unittest.skipUnless(os.name == "posix", "POSIX mode evidence only; Windows ACLs not verified")
     def test_private_new_output_and_preservation(self):
         with tempfile.TemporaryDirectory() as t:
             out=Path(t)/'out';old=os.umask(0o022)
@@ -100,7 +101,9 @@ elements.play.fire('click');elements.fold.value='both';elements.fold.fire('chang
         self.assertEqual(proc.returncode,0,proc.stderr)
     def test_symlink_destination_not_followed(self):
         with tempfile.TemporaryDirectory() as t:
-            target=Path(t)/'target';target.mkdir();out=Path(t)/'out';out.symlink_to(target,target_is_directory=True)
+            target=Path(t)/'target';target.mkdir();out=Path(t)/'out'
+            try: out.symlink_to(target,target_is_directory=True)
+            except (OSError,NotImplementedError): self.skipTest('Symlink creation unavailable; protection not tested')
             with self.assertRaises(FileExistsError):write_bundle(build('2026-01-01','UTC','UTC',1),out)
             self.assertEqual(list(target.iterdir()),[])
     def test_preflight_no_output(self):
@@ -110,6 +113,7 @@ elements.play.fire('click');elements.fold.value='both';elements.fold.fire('chang
             with patch('timeedge.playback.MAX_BYTES',10):
                 with self.assertRaises(ValueError):write_bundle(build('2026-01-01','UTC','UTC',1),out)
             self.assertFalse(out.exists())
+    @unittest.skipUnless(os.name == "posix", "POSIX mode evidence only; Windows ACLs not verified")
     def test_partial_failure_private(self):
         from unittest.mock import patch
         original=os.open
@@ -122,4 +126,29 @@ elements.play.fire('click');elements.fold.value='both';elements.fold.fire('chang
                 with self.assertRaises(OSError):write_bundle(build('2026-01-01','UTC','UTC',1),out)
             self.assertEqual(stat.S_IMODE(out.stat().st_mode),0o700)
             self.assertEqual(stat.S_IMODE((out/'playback.json').stat().st_mode),0o600)
+            self.assertFalse((out/'index.html').exists())
+
+    def test_existing_bundle_preserved_portably(self):
+        with tempfile.TemporaryDirectory() as t:
+            out=Path(t)/'out';data=build('2026-01-01','UTC','UTC',1)
+            write_bundle(data,out)
+            before={p.name:p.read_bytes() for p in out.iterdir()}
+            with self.assertRaises(FileExistsError):write_bundle(data,out)
+            self.assertEqual({p.name:p.read_bytes() for p in out.iterdir()},before)
+    def test_partial_failure_portably(self):
+        from unittest.mock import patch
+        original=os.open
+        def fail(path,flags,mode):
+            if str(path).endswith('index.html'):raise OSError('synthetic')
+            return original(path,flags,mode)
+        with tempfile.TemporaryDirectory() as t:
+            out=Path(t)/'out';data=build('2026-01-01','UTC','UTC',1)
+            with patch('timeedge.playback.os.open',fail):
+                with self.assertRaises(OSError):write_bundle(data,out)
+            self.assertTrue(out.is_dir())
+            self.assertEqual(json.loads((out/'playback.json').read_text()),data)
+            self.assertFalse((out/'index.html').exists())
+            before=(out/'playback.json').read_bytes()
+            with self.assertRaises(FileExistsError):write_bundle(data,out)
+            self.assertEqual((out/'playback.json').read_bytes(),before)
             self.assertFalse((out/'index.html').exists())
