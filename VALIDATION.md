@@ -87,3 +87,21 @@ slider navigation. This does not retroactively validate comparison adapters in
 a browser or claim mobile/cross-browser accessibility coverage. Offline wheel
 installation and generation outside the source checkout were also run. Hosted
 CI is not claimed. See README's boundary-player limits; no publication is implied.
+
+## Platform-scoped regression correction
+
+The published player initially had unconditional POSIX mode assertions; the
+final commit's Windows CI test job failed, while Linux jobs passed. Protected
+job logs were unavailable, so this is a code-inspected portability defect, not
+a claim to have read its exact traceback. The correction scopes two permission
+tests to POSIX and explicitly skips symlink creation when the OS cannot provide
+it. A separate portable existing-output preservation test remains active on
+every platform. Skipped permissions are **not** evidence of Windows ACL safety.
+The corrected Linux suite has 71 tests, zero skips. Windows will discover 71
+and skip at least the two POSIX-only checks (potentially the symlink capability
+check as well). Fresh full-matrix CI is still pending; no green CI claim is made.
+
+An additional portable injected-write-failure test verifies that the error
+propagates, the first JSON remains complete, the missing HTML is not fabricated,
+and retry cannot overwrite the partial directory. This runs on Windows too;
+only the separate POSIX permissions evidence is skipped.
